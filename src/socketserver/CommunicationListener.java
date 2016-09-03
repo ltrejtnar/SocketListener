@@ -5,16 +5,11 @@
  */
 package socketserver;
 
-import java.io.BufferedReader;
+import decoder.PacketIdentificator;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -30,17 +25,20 @@ public class CommunicationListener implements Runnable {
     private byte[] data;
     private short[] dataCorrected;
     private final int DATALENGTH = 47;
+    private PacketIdentificator decoder;    //has to be singleton
 
     public CommunicationListener() {
         port = 3002;
         DCenterIPaddress = "localhost";
         start = true;
+        decoder = new PacketIdentificator();
     }
 
     public CommunicationListener(int port, String DCenterIPaddress) {
         this.port = port;
         this.DCenterIPaddress = DCenterIPaddress;
         start = true;
+        decoder = new PacketIdentificator();
     }
 
     private void setListenSocket() {
@@ -63,11 +61,20 @@ public class CommunicationListener implements Runnable {
         for (byte b : data) {
             if (b < 0) {
                 dataCorrected[iterator] = (short) ((short) b + 256);
-            }else{
+            } else {
                 dataCorrected[iterator] = b;
             }
             iterator++;
         }
+    }
+
+    private String toHexString(short[] decimalArray) {
+        String result = "Server data: ";
+        for (short b : decimalArray) {
+            result = result + ", " + Integer.toHexString(b);
+        }
+        return result;
+
     }
 
     @Override
@@ -82,7 +89,9 @@ public class CommunicationListener implements Runnable {
             }
             System.out.println("Server bytes count: " + count);
             covertToShortArray();
+            System.out.println(toHexString(dataCorrected));
             System.out.println("Server data: " + Arrays.toString(dataCorrected));
+            System.out.println(decoder.decode(dataCorrected));
         }
     }
 
