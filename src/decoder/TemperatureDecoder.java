@@ -5,7 +5,9 @@
  */
 package decoder;
 
+import com.sun.xml.internal.ws.util.StringUtils;
 import java.util.Arrays;
+import java.util.Collections;
 import socketserver.Room;
 
 /**
@@ -15,7 +17,6 @@ import socketserver.Room;
 public class TemperatureDecoder {
 
     private short[] packet;
-    private final short[] HEADER = {255, 162, 0, 35};
     private final int ROOMSTART = 12;
     private final int TEMPSTART = 20;
     private final int TARGETSTART = 17;
@@ -42,23 +43,37 @@ public class TemperatureDecoder {
     }
 
     private int makeRoomNumber(short[] packet) {
-        String result = "";
-        for (short s : packet) {
-            result = result + Integer.toBinaryString((int) s);
-        }
-        return Integer.parseInt(result, 2);
+        String secondByte, firstByte = "";
+        int l;
+        secondByte = Integer.toBinaryString(packet[1]);
+        l = 8 - secondByte.length();
+        String filled = String.join("", Collections.nCopies(l, String.valueOf("0")));
+        firstByte = Integer.toBinaryString(packet[0]);
+        return Integer.parseInt((firstByte+filled+secondByte), 2);
     }
-     private int makeTemperature(short[] packet) {
-     // String result = Integer.toBinaryString((int) packet[3]);
-      //   System.out.println(Arrays.toString(packet));
-       // return Integer.parseInt(result.substring(2), 2);
-      return 1;
-    }
-      private int makeTarget(short[] packet) {
-        String result = Integer.toBinaryString((int) packet[0]);
-        return (Integer.parseInt(result.substring(2), 2))+40;
 
+    private double makeTemperature(short[] packet) {
+        String result = Integer.toBinaryString((int) packet[3]);
+           if (isFarenheit(packet)) {
+            return (Integer.parseInt(result.substring(2), 2)) + 40;
+        } else {
+            return (Integer.parseInt(result.substring(2), 2)*9/5+32);
+        }
+      
     }
-      
-      
+
+    private double makeTarget(short[] packet) {
+        String result = Integer.toBinaryString((int) packet[0]);
+        if (isFarenheit(packet)) {
+            return (Integer.parseInt(result.substring(2), 2)) + 40;
+        } else {
+            return (Integer.parseInt(result.substring(2), 2) * 9 / 5 + 32);
+        }
+    }
+
+    private boolean isFarenheit(short[] packet) {
+        int farenheitPosition = 1;
+        String result = Integer.toBinaryString((int) packet[0]);
+        return result.charAt(farenheitPosition) == '0';
+    }
 }
