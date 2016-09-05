@@ -31,14 +31,14 @@ public class CommunicationListener implements Runnable {
         port = 3002;
         DCenterIPaddress = "localhost";
         start = true;
-        decoder = new PacketIdentificator();
+        decoder = PacketIdentificator.getInstance();
     }
 
     public CommunicationListener(int port, String DCenterIPaddress) {
         this.port = port;
         this.DCenterIPaddress = DCenterIPaddress;
         start = true;
-        decoder = new PacketIdentificator();
+        decoder = PacketIdentificator.getInstance();
     }
 
     private void setListenSocket() {

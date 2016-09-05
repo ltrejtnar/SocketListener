@@ -5,7 +5,6 @@
  */
 package decoder;
 
-import com.sun.xml.internal.ws.util.StringUtils;
 import java.util.Arrays;
 import java.util.Collections;
 import socketserver.Room;
@@ -54,11 +53,13 @@ public class TemperatureDecoder {
 
     private double makeTemperature(short[] packet) {
         String result = Integer.toBinaryString((int) packet[3]);
-           if (isFarenheit(packet)) {
+        System.out.println(result);
+          /* if (isFarenheit(packet)) {
             return (Integer.parseInt(result.substring(2), 2)) + 40;
         } else {
-            return (Integer.parseInt(result.substring(2), 2)*9/5+32);
-        }
+            return (Integer.parseInt(result.substring(2), 2));
+        }*/
+          return 1;
       
     }
 

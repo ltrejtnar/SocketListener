@@ -12,11 +12,19 @@ import socketserver.Room;
  * @author Nudista
  */
 public class PacketIdentificator {
+    private static PacketIdentificator instance = null;
     private final short[] HEADER = {255, 162, 0, 35};
     private TemperatureDecoder tempDec;
 
-    public PacketIdentificator() {
+    private PacketIdentificator() {
     }
+    
+    public static PacketIdentificator getInstance() {
+      if(instance == null) {
+         instance = new PacketIdentificator();
+      }
+      return instance;
+   }
     
     public Room decode(short[] packet){
         if(checkPacketTemperature(packet)){
