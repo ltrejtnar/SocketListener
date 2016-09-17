@@ -5,7 +5,8 @@
  */
 package decoder;
 
-import java.util.Arrays;
+import constants.ACmode;
+import constants.FanSpeed;
 import java.util.Collections;
 import socketserver.Room;
 
@@ -33,48 +34,78 @@ public class TemperatureDecoder {
     }
 
     public Room setDataToRoom() {
-        int room;
-        double temperature, target;
-        room = makeRoomNumber(Arrays.copyOfRange(packet, ROOMSTART, ROOMSTART + 2));
-        temperature = makeTemperature(Arrays.copyOfRange(packet, TEMPSTART, TEMPSTART + 6));
-        target = makeTarget(Arrays.copyOfRange(packet, TARGETSTART, TARGETSTART + 2));
-        return new Room(room, temperature, target);
+        return new Room(makeRoomNumber(), makeTemperature(), makeTarget(), makeAcMode(), makeFanSpeed());
     }
 
-    private int makeRoomNumber(short[] packet) {
-        String secondByte, firstByte = "";
-        int l;
-        secondByte = Integer.toBinaryString(packet[1]);
-        l = 8 - secondByte.length();
-        String filled = String.join("", Collections.nCopies(l, String.valueOf("0")));
-        firstByte = Integer.toBinaryString(packet[0]);
-        return Integer.parseInt((firstByte+filled+secondByte), 2);
+    public void updateRoom(Room r) {
+
     }
 
-    private double makeTemperature(short[] packet) {
-        String result = Integer.toBinaryString((int) packet[3]);
-        System.out.println(result);
-          /* if (isFarenheit(packet)) {
-            return (Integer.parseInt(result.substring(2), 2)) + 40;
-        } else {
-            return (Integer.parseInt(result.substring(2), 2));
-        }*/
-          return 1;
-      
+    private int makeRoomNumber() {
+        String firstByte = Integer.toBinaryString(packet[ROOMSTART]);
+        return Integer.parseInt((firstByte + fillByte(Integer.toBinaryString(packet[ROOMSTART+1]))), 2);
     }
 
-    private double makeTarget(short[] packet) {
-        String result = Integer.toBinaryString((int) packet[0]);
-        if (isFarenheit(packet)) {
+    private double makeTemperature() {
+        String firstByte = fillByte(Integer.toBinaryString((int) packet[TEMPSTART])).substring(1);
+        String secondByte = fillByte(Integer.toBinaryString((int) packet[TEMPSTART+1])).substring(4);
+        return (double) Integer.parseInt(firstByte+secondByte, 2)/10;
+        
+
+    }
+
+    private double makeTarget() {
+        String result = fillByte(Integer.toBinaryString((int) packet[TARGETSTART]));
+        if (isFarenheit()) {
             return (Integer.parseInt(result.substring(2), 2)) + 40;
         } else {
             return (Integer.parseInt(result.substring(2), 2) * 9 / 5 + 32);
         }
     }
 
-    private boolean isFarenheit(short[] packet) {
+    private FanSpeed makeFanSpeed() {
+        String result = Integer.toBinaryString((int) packet[TARGETSTART+1]);
+        int status = Integer.parseInt(fillByte(result).substring(4, 6), 2);
+        switch (status) {
+            case 0:
+                return FanSpeed.OFF;
+            case 1:
+                return FanSpeed.LOW;
+            case 2:
+                return FanSpeed.MEDIUM;
+            case 3:
+                return FanSpeed.HIGH;
+            default:
+                return FanSpeed.UNKNOWN;
+        }
+    }
+
+    private ACmode makeAcMode() {
+        String result = Integer.toBinaryString((int) packet[TARGETSTART+1]);
+        int status = Integer.parseInt(fillByte(result).substring(6), 2);
+        switch (status) {
+            case 0:
+                return ACmode.OFF;
+            case 1:
+                return ACmode.FAN_ONLY;
+            case 2:
+                return ACmode.FAN_FIXED;
+            case 3:
+                return ACmode.AUTO;
+            default:
+                return ACmode.UNKNOWN;
+        }
+    }
+
+    private boolean isFarenheit() {
         int farenheitPosition = 1;
-        String result = Integer.toBinaryString((int) packet[0]);
+        String result = Integer.toBinaryString((int) packet[TARGETSTART]);
         return result.charAt(farenheitPosition) == '0';
+    }
+
+    private String fillByte(String data) {
+        int l = 8 - data.length();
+        String filled = String.join("", Collections.nCopies(l, String.valueOf("0")));
+        return filled + data;
     }
 }

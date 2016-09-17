@@ -5,6 +5,9 @@
  */
 package socketserver;
 
+import constants.ACmode;
+import constants.FanSpeed;
+
 /**
  *
  * @author Nudista
@@ -13,17 +16,39 @@ public class Room {
    private final int number;
    private double temperature;
    private double targetTemperature;
+   private ACmode acMode;
+   private FanSpeed fanSpeed;
 
     public Room(int number) {
         this.number = number;
     }
 
-    public Room(int number, double temperature, double targetTemperature) {
+    public Room(int number, double temperature, double targetTemperature, ACmode acMode, FanSpeed fanSpeed) {
         this.number = number;
         this.temperature = temperature;
         this.targetTemperature = targetTemperature;
+        this.acMode = acMode;
+        this.fanSpeed = fanSpeed;
     }
 
+    
+
+    public ACmode getAcMode() {
+        return acMode;
+    }
+
+    public void setAcMode(ACmode acMode) {
+        this.acMode = acMode;
+    }
+
+    public FanSpeed getFanSpeed() {
+        return fanSpeed;
+    }
+
+    public void setFanSpeed(FanSpeed fanSpeed) {
+        this.fanSpeed = fanSpeed;
+    }
+    
     public double getTemperature() {
         return temperature;
     }
@@ -67,8 +92,10 @@ public class Room {
 
     @Override
     public String toString() {
-        return "Room{" + "number=" + number + ", temperature=" + temperature + ", targetTemperature=" + targetTemperature + '}';
+        return "Room{" + "number=" + number + ", temperature=" + temperature + ", targetTemperature=" + targetTemperature + ", acMode=" + acMode + ", fanSpeed=" + fanSpeed + '}';
     }
+
+    
    
    
 }

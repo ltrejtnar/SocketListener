@@ -87,11 +87,8 @@ public class CommunicationListener implements Runnable {
             } catch (IOException ex) {
                 System.err.println("Data reading error");
             }
-            System.out.println("Server bytes count: " + count);
-            covertToShortArray();
-            System.out.println(toHexString(dataCorrected));
-            System.out.println("Server data: " + Arrays.toString(dataCorrected));
-            System.out.println(decoder.decode(dataCorrected));
+                      covertToShortArray();
+                       System.out.println(decoder.decode(dataCorrected));
         }
     }
 
