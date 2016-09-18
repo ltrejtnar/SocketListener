@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -25,9 +27,19 @@ public class CommunicationListener implements Runnable {
     private byte[] data;
     private short[] dataCorrected;
     private final int DATALENGTH = 47;
-    private PacketIdentificator decoder;    //has to be singleton
+    private final PacketIdentificator decoder;
+    private DataSet dataRooms;
+   // private Thread serverThread;
+  //  private Server server;
 
     public CommunicationListener() {
+    //    try {
+     //       this.server = new Server();
+     //   } catch (IOException ex) {
+    //        Logger.getLogger(CommunicationListener.class.getName()).log(Level.SEVERE, null, ex);
+    //    }
+     //   this.serverThread = new Thread(server);
+        this.dataRooms = new DataSet();
         port = 3002;
         DCenterIPaddress = "localhost";
         start = true;
@@ -35,6 +47,13 @@ public class CommunicationListener implements Runnable {
     }
 
     public CommunicationListener(int port, String DCenterIPaddress) {
+      //   try {
+     //       this.server = new Server();
+     //   } catch (IOException ex) {
+     //       Logger.getLogger(CommunicationListener.class.getName()).log(Level.SEVERE, null, ex);
+     //   }
+     //   this.serverThread = new Thread(server);
+        this.dataRooms = new DataSet();
         this.port = port;
         this.DCenterIPaddress = DCenterIPaddress;
         start = true;
@@ -79,6 +98,8 @@ public class CommunicationListener implements Runnable {
 
     @Override
     public void run() {
+        //serverThread.start();
+        Room room;
         int count = -1;
         setListenSocket();
         while (start) {
@@ -87,8 +108,12 @@ public class CommunicationListener implements Runnable {
             } catch (IOException ex) {
                 System.err.println("Data reading error");
             }
-                      covertToShortArray();
-                       System.out.println(decoder.decode(dataCorrected));
+            covertToShortArray();
+            room = decoder.decode(dataCorrected);
+            if(room!=null){
+                dataRooms.updateRoom(room); 
+            }
+           
         }
     }
 
