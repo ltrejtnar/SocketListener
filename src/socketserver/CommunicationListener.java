@@ -5,6 +5,8 @@
  */
 package socketserver;
 
+import database.DatabaseExecutor;
+import database.DatabaseWriter;
 import decoder.PacketIdentificator;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +18,7 @@ import java.util.Arrays;
  * @author Nudista
  */
 public class CommunicationListener implements Runnable {
-
+    
     private int port;
     private String DCenterIPaddress;
     private Socket socket;
@@ -25,22 +27,32 @@ public class CommunicationListener implements Runnable {
     private byte[] data;
     private short[] dataCorrected;
     private final int DATALENGTH = 47;
-    private PacketIdentificator decoder;    //has to be singleton
-
+    private final PacketIdentificator decoder;    
+    private final DatabaseWriter dbWriter;
+    private Thread databaseThread;
+    
     public CommunicationListener() {
         port = 3002;
         DCenterIPaddress = "localhost";
         start = true;
         decoder = PacketIdentificator.getInstance();
+        dbWriter = new DatabaseWriter();
+        
     }
-
+    
     public CommunicationListener(int port, String DCenterIPaddress) {
         this.port = port;
         this.DCenterIPaddress = DCenterIPaddress;
         start = true;
         decoder = PacketIdentificator.getInstance();
+        dbWriter = new DatabaseWriter();
+        
     }
-
+    
+    private final void runDatabase() {
+        
+    }
+    
     private void setListenSocket() {
         try {
             socket = new Socket(DCenterIPaddress, port);
@@ -54,7 +66,7 @@ public class CommunicationListener implements Runnable {
         }
         data = new byte[DATALENGTH];
     }
-
+    
     private void covertToShortArray() {
         dataCorrected = new short[DATALENGTH];
         int iterator = 0;
@@ -67,19 +79,22 @@ public class CommunicationListener implements Runnable {
             iterator++;
         }
     }
-
+    
     private String toHexString(short[] decimalArray) {
         String result = "Server data: ";
         for (short b : decimalArray) {
             result = result + ", " + Integer.toHexString(b);
         }
         return result;
-
+        
     }
-
+    
     @Override
     public void run() {
+        databaseThread = new Thread(dbWriter);
+        databaseThread.start();
         int count = -1;
+        Room r;
         setListenSocket();
         while (start) {
             try {
@@ -87,33 +102,37 @@ public class CommunicationListener implements Runnable {
             } catch (IOException ex) {
                 System.err.println("Data reading error");
             }
-                      covertToShortArray();
-                       System.out.println(decoder.decode(dataCorrected));
+            covertToShortArray();
+            r = decoder.decode(dataCorrected);
+            if (r != null) {
+                dbWriter.setRoom(r);
+                dbWriter.setRequest(true);
+            }            
         }
     }
-
+    
     public int getPort() {
         return port;
     }
-
+    
     public void setPort(int port) {
         this.port = port;
     }
-
+    
     public String getDCenterIPaddress() {
         return DCenterIPaddress;
     }
-
+    
     public void setDCenterIPaddress(String DCenterIPaddress) {
         this.DCenterIPaddress = DCenterIPaddress;
     }
-
+    
     public boolean isStart() {
         return start;
     }
-
+    
     public void setStart(boolean start) {
         this.start = start;
     }
-
+    
 }
