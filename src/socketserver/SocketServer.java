@@ -5,8 +5,6 @@
  */
 package socketserver;
 
-import database.DatabaseWriter;
-
 /**
  *
  * @author Nudista
@@ -17,9 +15,9 @@ public class SocketServer {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        CommunicationListener cl = new CommunicationListener();
+        CommunicationListener cl= new CommunicationListener();
         Thread listener = new Thread(cl);
-        listener.start();
+      listener.start();
     }
-
+    
 }

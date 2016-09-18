@@ -65,11 +65,6 @@ public class Room {
         this.targetTemperature = targetTemperature;
     }
 
-    public int getNumber() {
-        return number;
-    }
-    
-
     @Override
     public int hashCode() {
         int hash = 5;
