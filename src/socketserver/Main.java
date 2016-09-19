@@ -19,13 +19,14 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+       DataSet hotelData = new DataSet();
         Server server = null;
-        server = new Server(22348);
+        server = new Server(22348, hotelData);
         Thread serverThread = new Thread(server);
         serverThread.start();
-      //  CommunicationListener cl = new CommunicationListener();
-      //  Thread listener = new Thread(cl);
-      //  listener.start();
+       CommunicationListener cl = new CommunicationListener(hotelData);
+        Thread listener = new Thread(cl);
+        listener.start();
     }
 
 }

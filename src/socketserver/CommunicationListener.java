@@ -9,9 +9,6 @@ import decoder.PacketIdentificator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -32,14 +29,14 @@ public class CommunicationListener implements Runnable {
    // private Thread serverThread;
   //  private Server server;
 
-    public CommunicationListener() {
+    public CommunicationListener(DataSet ds) {
     //    try {
      //       this.server = new Server();
      //   } catch (IOException ex) {
     //        Logger.getLogger(CommunicationListener.class.getName()).log(Level.SEVERE, null, ex);
     //    }
      //   this.serverThread = new Thread(server);
-        this.dataRooms = new DataSet();
+        this.dataRooms = ds;
         port = 3002;
         DCenterIPaddress = "localhost";
         start = true;
@@ -98,7 +95,7 @@ public class CommunicationListener implements Runnable {
 
     @Override
     public void run() {
-        //serverThread.start();
+      
         Room room;
         int count = -1;
         setListenSocket();

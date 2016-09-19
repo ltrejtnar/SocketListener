@@ -68,6 +68,11 @@ public class Room {
     public int getNumber() {
         return number;
     }
+    
+    private double FarenheitToCelcius(double temp){
+        long number = Math.round((double) ((temp-32)*5/9) * 100);
+        return (double) number/100;
+    }
 
     
     @Override
@@ -97,7 +102,9 @@ public class Room {
 
     @Override
     public String toString() {
-        return "Room{" + "number=" + number + ", temperature=" + temperature + ", targetTemperature=" + targetTemperature + ", acMode=" + acMode + ", fanSpeed=" + fanSpeed + '}';
+        double tempC = FarenheitToCelcius(temperature);
+        double targTempC = FarenheitToCelcius(targetTemperature);
+        return "Room: " + number + "<br/>Temp.: " + temperature + "&degF ("+ tempC+ "&degC)<br/>Target: " + targetTemperature + "&degF (" +targTempC + "&degC)<br/>AC mode: " + acMode + "<br/>Fan speed: " + fanSpeed;
     }
 
     

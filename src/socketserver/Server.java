@@ -5,13 +5,13 @@
  */
 package socketserver;
 
+import constants.ACmode;
+import constants.FanSpeed;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -21,6 +21,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import sun.misc.BASE64Encoder;
 
 /**
@@ -34,14 +36,16 @@ public class Server implements Runnable {
     private ServerSocket serverSocket;
     private boolean bezi;
     private Socket socket;
+    private DataSet ds;
 
-    public Server(int port) {
+    public Server(int port, DataSet ds) {
         this.bezi = true;
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException ex) {
             System.err.println("SERVER - chyba pri spusteni");
         }
+        this.ds = ds;
     }
 
     private boolean connect() throws IOException {
@@ -129,13 +133,17 @@ public class Server implements Runnable {
         while (bezi) {
             try {
                 if (connect()) {
-                    t = new Thread(new ObsluhaKlienta(socket));
+                    t = new Thread(new ObsluhaKlienta(socket, ds));
+                } else {
+                    Thread.sleep(50L);
                 }
                 t.setDaemon(true);
                 t.start();
             } catch (IOException ex) {
                 System.err.println("Server - chyba pri vytvareni klientskeho vlakna: ");
                 ex.printStackTrace();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -149,63 +157,39 @@ public class Server implements Runnable {
     class ObsluhaKlienta implements Runnable {
 
         protected Socket s;
+        protected DataSet data;
 
-        public ObsluhaKlienta(Socket s) {
+        public ObsluhaKlienta(Socket s, DataSet ds) {
             this.s = s;
+            this.data = ds;
         }
 
         @Override
         public void run() {
-            BufferedReader reader = null;
-            PrintWriter writer = null;
             try {
-                reader = new BufferedReader(new InputStreamReader(s.getInputStream(), "UTF-8"));
-                writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(s.getOutputStream(), "UTF-8")), true);
-
-                while (true) {
-                    String zprava = reiceveMessage();
-                                  if (zprava.length() == 0) {
-                                       continue;
-                    } else {
-                        sendMessage("dsfsdf");
-                    }
-
-                    if (zprava.toLowerCase().equals("end")) {
-                        writer.println("Server - odpojuji klienta...");
-                        break;
-                    }
-                    writer.println("zprava prijata...");
+                String zprava="0";
+                try {
+                    zprava = reiceveMessage();
+                } catch (IOException ex) {
+                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                sendMessage(data.getRoom(zprava).toString());
+
+                socket.close();
+
             } catch (IOException ex) {
-                System.err.println("Server - chyba komunikace: ");
-                ex.printStackTrace();
-            } finally {
-                if (writer != null) {
-                    writer.close();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException ex) {
-                    }
-                }
-
-                if (s != null) {
-                    try {
-                        s.close();
-                    } catch (IOException ex) {
-                    }
-                }
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            System.out.println("Server - ukoncuji obsluzne vlakno klienta...");
         }
 
         public String reiceveMessage() throws IOException {
             byte[] buf = readBytes(2);
             System.out.println("Headers:");
             convertAndPrint(buf);
-            if(buf[0]==0 && buf[1]==0) return "";
+            if (buf[0] == 0 && buf[1] == 0) {
+                return "";
+            }
             int opcode = buf[0] & 0x0F;
             if (opcode == 8) {
                 //Client want to close connection!
