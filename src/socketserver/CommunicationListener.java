@@ -26,35 +26,27 @@ public class CommunicationListener implements Runnable {
     private final int DATALENGTH = 47;
     private final PacketIdentificator decoder;
     private DataSet dataRooms;
-   // private Thread serverThread;
-  //  private Server server;
+    private Thread serverThread;
+    private Server server;
 
     public CommunicationListener(DataSet ds) {
-    //    try {
-     //       this.server = new Server();
-     //   } catch (IOException ex) {
-    //        Logger.getLogger(CommunicationListener.class.getName()).log(Level.SEVERE, null, ex);
-    //    }
-     //   this.serverThread = new Thread(server);
         this.dataRooms = ds;
         port = 3002;
         DCenterIPaddress = "localhost";
         start = true;
         decoder = PacketIdentificator.getInstance();
+        this.server = new Server(22348, dataRooms);
+        this.serverThread = new Thread(server);
     }
 
-    public CommunicationListener(int port, String DCenterIPaddress) {
-      //   try {
-     //       this.server = new Server();
-     //   } catch (IOException ex) {
-     //       Logger.getLogger(CommunicationListener.class.getName()).log(Level.SEVERE, null, ex);
-     //   }
-     //   this.serverThread = new Thread(server);
-        this.dataRooms = new DataSet();
+    public CommunicationListener(int port, String DCenterIPaddress, DataSet ds) {
+        this.dataRooms = ds;
         this.port = port;
         this.DCenterIPaddress = DCenterIPaddress;
         start = true;
         decoder = PacketIdentificator.getInstance();
+        this.server = new Server(22348, dataRooms);
+        this.serverThread = new Thread(server);
     }
 
     private void setListenSocket() {
@@ -95,10 +87,11 @@ public class CommunicationListener implements Runnable {
 
     @Override
     public void run() {
-      
+
         Room room;
         int count = -1;
         setListenSocket();
+        serverThread.start();
         while (start) {
             try {
                 count = InStream.read(data);
@@ -107,10 +100,9 @@ public class CommunicationListener implements Runnable {
             }
             covertToShortArray();
             room = decoder.decode(dataCorrected);
-            if(room!=null){
-                dataRooms.updateRoom(room); 
+            if (room != null) {
+                dataRooms.updateRoom(room);
             }
-           
         }
     }
 
