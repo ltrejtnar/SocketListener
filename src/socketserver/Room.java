@@ -13,22 +13,25 @@ import constants.FanSpeed;
  * @author Nudista
  */
 public class Room {
-   private final int number;
-   private double temperature;
-   private double targetTemperature;
-   private ACmode acMode;
-   private FanSpeed fanSpeed;
+
+    private final int number;
+    private double temperature;
+    private double targetTemperature;
+    private ACmode acMode;
+    private FanSpeed fanSpeedMan;
+    private FanSpeed fanSpeedProposed;
 
     public Room(int number) {
         this.number = number;
     }
 
-    public Room(int number, double temperature, double targetTemperature, ACmode acMode, FanSpeed fanSpeed) {
+    public Room(int number, double temperature, double targetTemperature, ACmode acMode, FanSpeed fanSpeedMan, FanSpeed fanSpeedProposed) {
         this.number = number;
         this.temperature = temperature;
         this.targetTemperature = targetTemperature;
         this.acMode = acMode;
-        this.fanSpeed = fanSpeed;
+        this.fanSpeedMan = fanSpeedMan;
+        this.fanSpeedProposed = fanSpeedProposed;
     }
 
     
@@ -41,14 +44,23 @@ public class Room {
         this.acMode = acMode;
     }
 
-    public FanSpeed getFanSpeed() {
-        return fanSpeed;
+    public FanSpeed getFanSpeedMan() {
+        return fanSpeedMan;
     }
 
-    public void setFanSpeed(FanSpeed fanSpeed) {
-        this.fanSpeed = fanSpeed;
+    public void setFanSpeedMan(FanSpeed fanSpeedMan) {
+        this.fanSpeedMan = fanSpeedMan;
     }
-    
+
+    public FanSpeed getFanSpeedProposed() {
+        return fanSpeedProposed;
+    }
+
+    public void setFanSpeedProposed(FanSpeed fanSpeedProposed) {
+        this.fanSpeedProposed = fanSpeedProposed;
+    }
+
+   
     public double getTemperature() {
         return temperature;
     }
@@ -68,13 +80,12 @@ public class Room {
     public int getNumber() {
         return number;
     }
-    
-    private double FarenheitToCelcius(double temp){
-        long number = Math.round((double) ((temp-32)*5/9) * 100);
-        return (double) number/100;
+
+    private double FarenheitToCelcius(double temp) {
+        long number = Math.round((double) ((temp - 32) * 5 / 9) * 100);
+        return (double) number / 100;
     }
 
-    
     @Override
     public int hashCode() {
         int hash = 5;
@@ -104,10 +115,8 @@ public class Room {
     public String toString() {
         double tempC = FarenheitToCelcius(temperature);
         double targTempC = FarenheitToCelcius(targetTemperature);
-        return "Room: " + number + "<br/>Temp.: " + temperature + "&degF ("+ tempC+ "&degC)<br/>Target: " + targetTemperature + "&degF (" +targTempC + "&degC)<br/>AC mode: " + acMode + "<br/>Fan speed: " + fanSpeed;
+      //  return "Room: " + number + "<br/>Temp.: " + temperature + "&degF (" + tempC + "&degC)<br/>Target: " + targetTemperature + "&degF (" + targTempC + "&degC)<br/>AC mode: " + acMode + "<br/>Fan speed: " + fanSpeed;
+        return "{\"room\":\"" + number + "\", \"tmp\":\"" + temperature +  "\", \"ttmp\":\"" + targetTemperature + "\", \"ac\":\"" + acMode + "\", \"fanM\":\"" + fanSpeedMan + "\", \"fanP\":\"" + fanSpeedProposed +"\"}";
     }
 
-    
-   
-   
 }

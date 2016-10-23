@@ -34,7 +34,7 @@ public class TemperatureDecoder {
     }
 
     public Room setDataToRoom() {
-        return new Room(makeRoomNumber(), makeTemperature(), makeTarget(), makeAcMode(), makeFanSpeed());
+        return new Room(makeRoomNumber(), makeTemperature(), makeTarget(), makeAcMode(), makeFanSpeedMan(), makeFanSpeedProposed());
     }
 
     public void updateRoom(Room r) {
@@ -63,7 +63,7 @@ public class TemperatureDecoder {
         }
     }
 
-    private FanSpeed makeFanSpeed() {
+    private FanSpeed makeFanSpeedMan() {
         String result = Integer.toBinaryString((int) packet[TARGETSTART+1]);
         int status = Integer.parseInt(fillByte(result).substring(4, 6), 2);
         switch (status) {
@@ -80,6 +80,23 @@ public class TemperatureDecoder {
         }
     }
 
+    private FanSpeed makeFanSpeedProposed() {
+        String result = Integer.toBinaryString((int) packet[TEMPSTART+3]);
+        int status = Integer.parseInt(fillByte(result).substring(6), 2);
+        switch (status) {
+            case 0:
+                return FanSpeed.OFF;
+            case 1:
+                return FanSpeed.LOW;
+            case 2:
+                return FanSpeed.MEDIUM;
+            case 3:
+                return FanSpeed.HIGH;
+            default:
+                return FanSpeed.UNKNOWN;
+        }
+    }
+    
     private ACmode makeAcMode() {
         String result = Integer.toBinaryString((int) packet[TARGETSTART+1]);
         int status = Integer.parseInt(fillByte(result).substring(6), 2);

@@ -5,6 +5,8 @@
  */
 package socketserver;
 
+import configLoader.Loader;
+
 /**
  *
  * @author Nudista
@@ -15,8 +17,14 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-       DataSet hotelData = new DataSet();
-        CommunicationListener cl = new CommunicationListener(hotelData);
+        Loader config = new Loader("config/SSconfig.properties");
+
+        int INNCOMport = Integer.parseInt(config.getProp().getProperty("inncom.port", "3002"));
+        int WEBport = Integer.parseInt(config.getProp().getProperty("web.port", "22348"));
+        String INNCOMaddress = config.getProp().getProperty("inncom.address", "localhost");
+
+        DataSet hotelData = new DataSet();
+        CommunicationListener cl = new CommunicationListener(INNCOMport, INNCOMaddress, hotelData, WEBport);
         Thread listener = new Thread(cl);
         listener.start();
     }

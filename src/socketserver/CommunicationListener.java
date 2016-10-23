@@ -29,23 +29,23 @@ public class CommunicationListener implements Runnable {
     private Thread serverThread;
     private Server server;
 
-    public CommunicationListener(DataSet ds) {
+    public CommunicationListener(DataSet ds, int portWeb) {
         this.dataRooms = ds;
         port = 3002;
         DCenterIPaddress = "localhost";
         start = true;
         decoder = PacketIdentificator.getInstance();
-        this.server = new Server(22348, dataRooms);
+        this.server = new Server(portWeb, dataRooms);
         this.serverThread = new Thread(server);
     }
 
-    public CommunicationListener(int port, String DCenterIPaddress, DataSet ds) {
+    public CommunicationListener(int port, String DCenterIPaddress, DataSet ds, int portWeb) {
         this.dataRooms = ds;
         this.port = port;
         this.DCenterIPaddress = DCenterIPaddress;
         start = true;
         decoder = PacketIdentificator.getInstance();
-        this.server = new Server(22348, dataRooms);
+        this.server = new Server(portWeb, dataRooms);
         this.serverThread = new Thread(server);
     }
 

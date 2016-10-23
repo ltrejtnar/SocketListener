@@ -36,12 +36,12 @@ public class DataSet {
     }
 
     public Room getRoom(String roomNumber) {
-        if(roomNumber==null || "".equals(roomNumber)) return new Room(0, 0, 0, ACmode.UNKNOWN, FanSpeed.UNKNOWN);
+        if(roomNumber==null || "".equals(roomNumber)) return new Room(0, 0, 0, ACmode.UNKNOWN, FanSpeed.UNKNOWN, FanSpeed.UNKNOWN);
         int number = Integer.parseInt(roomNumber);
         if (hm.containsKey(number)) {
             return hm.get(number);
         } else {
-            return new Room(number, 0, 0, ACmode.UNKNOWN, FanSpeed.UNKNOWN);
+            return new Room(number, 0, 0, ACmode.UNKNOWN, FanSpeed.UNKNOWN, FanSpeed.UNKNOWN);
         }
     }
 
