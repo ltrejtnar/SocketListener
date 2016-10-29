@@ -20,6 +20,7 @@ public class TemperatureDecoder {
     private final int ROOMSTART = 12;
     private final int TEMPSTART = 20;
     private final int TARGETSTART = 17;
+    private final int COOLSTART = 26;
 
     public TemperatureDecoder(short[] packet) {
         this.packet = packet;
@@ -34,7 +35,7 @@ public class TemperatureDecoder {
     }
 
     public Room setDataToRoom() {
-        return new Room(makeRoomNumber(), makeTemperature(), makeTarget(), makeAcMode(), makeFanSpeedMan(), makeFanSpeedProposed());
+        return new Room(makeRoomNumber(), makeTemperature(), makeTarget(), makeAcMode(), makeFanSpeedMan(), makeFanSpeedProposed(), true, true, true, true, makeHeating(), makeCooling());
     }
 
     public void updateRoom(Room r) {
@@ -112,6 +113,18 @@ public class TemperatureDecoder {
             default:
                 return ACmode.UNKNOWN;
         }
+    }
+    private boolean makeCooling() {
+        int coolingPosition = 4;
+        String result = Integer.toBinaryString((int) packet[COOLSTART+1]);
+        return fillByte(result).charAt(coolingPosition) == '1';
+       
+    }
+    
+     private boolean makeHeating() {
+        int heatingPosition = 3;
+        String result = Integer.toBinaryString((int) packet[COOLSTART+1]);
+        return fillByte(result).charAt(heatingPosition) == '1';
     }
 
     private boolean isFarenheit() {

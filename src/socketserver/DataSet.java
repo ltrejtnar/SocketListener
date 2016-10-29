@@ -23,25 +23,25 @@ public class DataSet {
 
     private void insertRoom(Room r) {
         hm.put(r.getNumber(), r);
-        System.out.println("Inserted " + r);
+     //   System.out.println("Inserted " + r);
     }
 
     public void updateRoom(Room r) {
         if (hm.containsKey(r.getNumber())) {
             hm.replace(r.getNumber(), r);
-            System.out.println("Updated " + r);
+        //    System.out.println("Updated " + r);
         } else {
             insertRoom(r);
         }
     }
 
     public Room getRoom(String roomNumber) {
-        if(roomNumber==null || "".equals(roomNumber)) return new Room(0, 0, 0, ACmode.UNKNOWN, FanSpeed.UNKNOWN, FanSpeed.UNKNOWN);
+        if(roomNumber==null || "".equals(roomNumber) || (roomNumber.length() > 6)) return new Room(-1);
         int number = Integer.parseInt(roomNumber);
         if (hm.containsKey(number)) {
             return hm.get(number);
         } else {
-            return new Room(number, 0, 0, ACmode.UNKNOWN, FanSpeed.UNKNOWN, FanSpeed.UNKNOWN);
+            return new Room(-1);
         }
     }
 

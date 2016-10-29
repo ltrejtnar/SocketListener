@@ -5,8 +5,6 @@
  */
 package socketserver;
 
-import constants.ACmode;
-import constants.FanSpeed;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -49,9 +47,9 @@ public class Server implements Runnable {
     }
 
     private boolean connect() throws IOException {
-        System.out.println("Listening");
+        //System.out.println("Listening");
         socket = serverSocket.accept();
-        System.out.println("Got connection");
+       // System.out.println("Got connection");
         if (handshake()) {
             return true;
         } else {
@@ -68,8 +66,8 @@ public class Server implements Runnable {
         //Reading client handshake
         while (!(str = in.readLine()).equals("")) {
             String[] s = str.split(": ");
-            System.out.println();
-            System.out.println(str);
+           // System.out.println();
+          //  System.out.println(str);
             if (s.length == 2) {
                 keys.put(s[0], s[1]);
             }
@@ -118,7 +116,7 @@ public class Server implements Runnable {
         for (byte b : bytes) {
             sb.append(String.format("%02X ", b));
         }
-        System.out.println(sb.toString());
+       // System.out.println(sb.toString());
     }
 
     @Override
@@ -151,7 +149,7 @@ public class Server implements Runnable {
             serverSocket.close();
         } catch (IOException ex) {
         }
-        System.out.println("Server - ukoncuji se...");
+      //  System.out.println("Server - ukoncuji se...");
     }
 
     class ObsluhaKlienta implements Runnable {
@@ -167,7 +165,7 @@ public class Server implements Runnable {
         @Override
         public void run() {
             try {
-                String zprava="0";
+                String zprava="";
                 try {
                     zprava = reiceveMessage();
                 } catch (IOException ex) {
@@ -185,7 +183,7 @@ public class Server implements Runnable {
 
         public String reiceveMessage() throws IOException {
             byte[] buf = readBytes(2);
-            System.out.println("Headers:");
+        //    System.out.println("Headers:");
             convertAndPrint(buf);
             if (buf[0] == 0 && buf[1] == 0) {
                 return "";
@@ -193,15 +191,15 @@ public class Server implements Runnable {
             int opcode = buf[0] & 0x0F;
             if (opcode == 8) {
                 //Client want to close connection!
-                System.out.println("Client closed!");
+             //   System.out.println("Client closed!");
                 socket.close();
                 System.exit(0);
                 return null;
             } else {
                 final int payloadSize = getSizeOfPayload(buf[1]);
-                System.out.println("Payloadsize: " + payloadSize);
+              //  System.out.println("Payloadsize: " + payloadSize);
                 buf = readBytes(MASK_SIZE + payloadSize);
-                System.out.println("Payload:");
+              //  System.out.println("Payload:");
                 convertAndPrint(buf);
                 buf = unMask(Arrays.copyOfRange(buf, 0, 4), Arrays.copyOfRange(buf, 4, buf.length));
                 String message = new String(buf);
@@ -210,7 +208,7 @@ public class Server implements Runnable {
         }
 
         public void sendMessage(String msg) throws IOException {
-            System.out.println("Sending to client");
+         //   System.out.println("Sending to client");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             BufferedOutputStream os = new BufferedOutputStream(socket.getOutputStream());
             baos.write(SINGLE_FRAME_UNMASKED);
