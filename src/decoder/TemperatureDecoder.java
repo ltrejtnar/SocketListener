@@ -7,20 +7,16 @@ package decoder;
 
 import constants.ACmode;
 import constants.FanSpeed;
-import java.util.Collections;
-import socketserver.Room;
+import data.Room;
 
 /**
  *
  * @author Nudista
  */
-public class TemperatureDecoder {
+public class TemperatureDecoder extends RoomDecoder implements Decoder, Constants{
 
     private short[] packet;
-    private final int ROOMSTART = 12;
-    private final int TEMPSTART = 20;
-    private final int TARGETSTART = 17;
-    private final int COOLSTART = 26;
+
 
     public TemperatureDecoder(short[] packet) {
         this.packet = packet;
@@ -33,18 +29,12 @@ public class TemperatureDecoder {
     public void setPacket(short[] packet) {
         this.packet = packet;
     }
-
+    
+    @Override
+    //    0=false, 1=true, 2=unknown
     public Room setDataToRoom() {
-        return new Room(makeRoomNumber(), makeTemperature(), makeTarget(), makeAcMode(), makeFanSpeedMan(), makeFanSpeedProposed(), true, true, true, true, makeHeating(), makeCooling());
-    }
-
-    public void updateRoom(Room r) {
-
-    }
-
-    private int makeRoomNumber() {
-        String firstByte = Integer.toBinaryString(packet[ROOMSTART]);
-        return Integer.parseInt((firstByte + fillByte(Integer.toBinaryString(packet[ROOMSTART+1]))), 2);
+  
+        return new Room(makeRoomNumber(packet), makeTemperature(), makeTarget(), makeAcMode(), makeFanSpeedMan(), makeFanSpeedProposed(), 2, 2, 2, 2, makeHeating(), makeCooling());
     }
 
     private double makeTemperature() {
@@ -114,17 +104,21 @@ public class TemperatureDecoder {
                 return ACmode.UNKNOWN;
         }
     }
-    private boolean makeCooling() {
-        int coolingPosition = 4;
+    
+    //    0=false, 1=true, 2=unknown
+    private int makeCooling() {
         String result = Integer.toBinaryString((int) packet[COOLSTART+1]);
-        return fillByte(result).charAt(coolingPosition) == '1';
+        if(fillByte(result).charAt(COOLINGPOSITION) == '1') return 1;
+        else return 0;
+    
        
     }
     
-     private boolean makeHeating() {
-        int heatingPosition = 3;
+    //    0=false, 1=true, 2=unknown
+     private int makeHeating() {  
         String result = Integer.toBinaryString((int) packet[COOLSTART+1]);
-        return fillByte(result).charAt(heatingPosition) == '1';
+         if(fillByte(result).charAt(HEATINGPOSITION) == '1') return 1;
+        else return 0;
     }
 
     private boolean isFarenheit() {
@@ -133,9 +127,6 @@ public class TemperatureDecoder {
         return result.charAt(farenheitPosition) == '0';
     }
 
-    private String fillByte(String data) {
-        int l = 8 - data.length();
-        String filled = String.join("", Collections.nCopies(l, String.valueOf("0")));
-        return filled + data;
-    }
+  
+   
 }

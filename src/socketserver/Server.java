@@ -5,6 +5,7 @@
  */
 package socketserver;
 
+import data.DataSet;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -35,6 +36,7 @@ public class Server implements Runnable {
     private boolean bezi;
     private Socket socket;
     private DataSet ds;
+    private final long SLEEPINGTIME = 40L;
 
     public Server(int port, DataSet ds) {
         this.bezi = true;
@@ -133,7 +135,7 @@ public class Server implements Runnable {
                 if (connect()) {
                     t = new Thread(new ObsluhaKlienta(socket, ds));
                 } else {
-                    Thread.sleep(50L);
+                    Thread.sleep(SLEEPINGTIME);
                 }
                 t.setDaemon(true);
                 t.start();

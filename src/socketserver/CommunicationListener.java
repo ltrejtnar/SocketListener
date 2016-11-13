@@ -5,6 +5,8 @@
  */
 package socketserver;
 
+import data.Room;
+import data.DataSet;
 import decoder.PacketIdentificator;
 import java.io.IOException;
 import java.io.InputStream;
@@ -99,6 +101,10 @@ public class CommunicationListener implements Runnable {
                 System.err.println("Data reading error");
             }
             covertToShortArray();
+          //  System.out.println(Arrays.toString(dataCorrected));
+         //   System.out.println(toHexString(dataCorrected));   
+         
+            
             room = decoder.decode(dataCorrected);
             if (room != null) {
                 dataRooms.updateRoom(room);

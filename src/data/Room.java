@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package socketserver;
+package data;
 
 import constants.ACmode;
 import constants.FanSpeed;
@@ -20,12 +20,15 @@ public class Room {
     private ACmode acMode;
     private FanSpeed fanSpeedMan;
     private FanSpeed fanSpeedProposed;
-    private boolean rented;
-    private boolean privacy;
-    private boolean occupacy;
-    private boolean window;
-    private boolean heating;
-    private boolean cooling;
+//    0=false, 1=true, 2=unknown
+    private int rented;
+    private int privacy;
+    private int occupacy;
+    private int window;
+    private int heating;
+    private int cooling;
+    private int dnd;
+    private int mur;
 
     public Room(int number) {
         this.number = number;
@@ -40,7 +43,7 @@ public class Room {
         this.fanSpeedProposed = fanSpeedProposed;
     }
 
-    public Room(int number, double temperature, double targetTemperature, ACmode acMode, FanSpeed fanSpeedMan, FanSpeed fanSpeedProposed, boolean rented, boolean privacy, boolean occupacy, boolean window, boolean heating, boolean cooling) {
+    public Room(int number, double temperature, double targetTemperature, ACmode acMode, FanSpeed fanSpeedMan, FanSpeed fanSpeedProposed, int rented, int privacy, int occupacy, int window, int heating, int cooling) {
         this.number = number;
         this.temperature = temperature;
         this.targetTemperature = targetTemperature;
@@ -53,55 +56,57 @@ public class Room {
         this.window = window;
         this.heating = heating;
         this.cooling = cooling;
+        this.dnd = 2;
+        this.mur = 2;
     }
 
-    public boolean isHeating() {
+    public int isHeating() {
         return heating;
     }
 
-    public void setHeating(boolean heating) {
+    public void setHeating(int heating) {
         this.heating = heating;
     }
 
-    public boolean isCooling() {
+    public int isCooling() {
         return cooling;
     }
 
-    public void setCooling(boolean cooling) {
+    public void setCooling(int cooling) {
         this.cooling = cooling;
     }
 
     
 
-    public boolean isRented() {
+    public int isRented() {
         return rented;
     }
 
-    public void setRented(boolean rented) {
+    public void setRented(int rented) {
         this.rented = rented;
     }
 
-    public boolean isPrivacy() {
+    public int isPrivacy() {
         return privacy;
     }
 
-    public void setPrivacy(boolean privacy) {
+    public void setPrivacy(int privacy) {
         this.privacy = privacy;
     }
 
-    public boolean isOccupacy() {
+    public int isOccupacy() {
         return occupacy;
     }
 
-    public void setOccupacy(boolean occupacy) {
+    public void setOccupacy(int occupacy) {
         this.occupacy = occupacy;
     }
 
-    public boolean isWindow() {
+    public int isWindow() {
         return window;
     }
 
-    public void setWindow(boolean window) {
+    public void setWindow(int window) {
         this.window = window;
     }
 
@@ -146,13 +151,55 @@ public class Room {
         this.targetTemperature = targetTemperature;
     }
 
+    public int getDnd() {
+        return dnd;
+    }
+
+    public void setDnd(int dnd) {
+        this.dnd = dnd;
+    }
+
+    public int getMur() {
+        return mur;
+    }
+
+    public void setMur(int mur) {
+        this.mur = mur;
+    }
+
     public int getNumber() {
         return number;
     }
 
+    public int getRented() {
+        return rented;
+    }
+
+    public int getPrivacy() {
+        return privacy;
+    }
+
+    public int getOccupacy() {
+        return occupacy;
+    }
+
+    public int getWindow() {
+        return window;
+    }
+
+    public int getHeating() {
+        return heating;
+    }
+
+    public int getCooling() {
+        return cooling;
+    }
+    
+    
+
     private double FarenheitToCelcius(double temp) {
-        long number = Math.round((double) ((temp - 32) * 5 / 9) * 100);
-        return (double) number / 100;
+        long value = Math.round((double) ((temp - 32) * 5 / 9) * 100);
+        return (double) value / 100;
     }
 
     @Override
@@ -180,21 +227,15 @@ public class Room {
         return true;
     }
     
-    private int booleanToNumber(boolean b){
-        if(b==true){
-            return 1;
-        }else{
-            return 0;
-        }
-    } 
-
+    
+  
     @Override
     public String toString() {
-      //  return "Room: " + number + "<br/>Temp.: " + temperature + "&degF (" + tempC + "&degC)<br/>Target: " + targetTemperature + "&degF (" + targTempC + "&degC)<br/>AC mode: " + acMode + "<br/>Fan speed: " + fanSpeed;
-        return "{\"ro\":\"" + number + "\", \"tm\":\"" + temperature +  "\", \"tt\":\"" + targetTemperature + "\", \"ac\":\"" + acMode + "\", \"fa\":\"" + fanSpeedProposed + "\", \"re\":\"" + booleanToNumber(rented) + "\", \"oc\":\"" + booleanToNumber(occupacy) + "\", \"wi\":\"" + booleanToNumber(window) + "\", \"pr\":\"" + booleanToNumber(privacy) +"\", \"co\":\"" + booleanToNumber(cooling) +"\", \"he\":\"" + booleanToNumber(heating) +"\"}";
-    //     return "{\"room\":\"" + number + "\", \"temp\":\"" + temperature +  "\", \"ttemp\":\"" + targetTemperature + "\", \"ac\":\"" + acMode + "\", \"fan\":\"" + fanSpeedProposed + "\", \"rented\":\"" + rented + "\", \"occup\":\"" + occupacy + "\", \"window\":\"" + window + "\", \"privat\":\"" + privacy +"\", \"cool\":\"" + cooling +"\", \"heat\":\"" + heating +"\"}";
- //  return "{\"ro\":\"" + number + "\", \"tm\":\"" + temperature +  "\", \"tt\":\"" + targetTemperature + "\", \"ac\":\"" + acMode + "\", \"fa\":\"" + fanSpeedProposed + "\", \"co\":\"" + booleanToNumber(cooling) +"\", \"he\":\"" + booleanToNumber(heating) +"\"}";
   
+        return "{\"ro\":\"" + number + "\", \"tm\":\"" + temperature +  "\", \"tt\":\"" + targetTemperature + "\", \"ac\":\"" + acMode + "\", \"fa\":\"" + fanSpeedProposed + "\", \"re\":\"" + (rented) + "\", \"oc\":\"" + (occupacy) + "\", \"wi\":\"" + (window) + "\", \"pr\":\"" + (privacy) +"\", \"co\":\"" + (cooling) +"\", \"he\":\"" + (heating) +"\"}";
+
+
+ // return "{\"ro\":\"" + number + "\", \"tm\":\"" + temperature +  "\", \"tt\":\"" + targetTemperature + "\", \"ac\":\"" + acMode + "\", \"fa\":\"" + fanSpeedProposed + "\", \"re\":\"" + (rented) + "\", \"oc\":\"" + (occupacy) + "\", \"wi\":\"" + (window) + "\", \"pr\":\"" + (privacy) +"\", \"co\":\"" + (cooling) +"\", \"he\":\"" + (heating) +"\", \"dn\":\"" + (dnd) +"\", \"mu\":\"" + (mur) +"\"}";
     }
 
 }
